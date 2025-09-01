@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tạp Hóa LÊ LỆ - Cửa hàng trực tuyến đơn giản</title>
+  <style>
+    :root{
+      --primary:#55aad2;
+      --accent:#ffb703;
+      --bg:#f8f9fa;
+      --card:#ffffff;
+      --muted:#666;
+      --radius:12px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#111}
+    header{background:var(--primary);color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo {
+  width: auto;
+  height: 60px; /* nhỏ hơn so với 56px */
+  border-radius: 0; /* bỏ nền trắng nếu muốn logo tự nhiên */
+  background: transparent; /* không cần nền */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img {
+  height: 100%;
+  width: auto;   /* giữ đúng tỉ lệ ảnh */
+  border-radius: 8px; /* bo góc nhẹ nếu muốn */
+}
+
+    h1{margin:0;font-size:20px}
+    .search{max-width:420px;flex:1;margin-left:20px}
+    .search input{width:100%;padding:10px 12px;border-radius:10px;border:0}
+    .container{max-width:1100px;margin:20px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:260px 1fr;gap:18px}
+    .sidebar{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(8,12,20,0.06)}
+    .categories button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:0;background:transparent;margin-bottom:8px}
+    .categories button.active{background:linear-gradient(90deg, #e6ffea, #f5fff8)}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(8,12,20,0.04);display:flex;flex-direction:column}
+    .card img{width:100%;height:150px;object-fit:cover;border-radius:8px}
+    .card h3{margin:8px 0 4px;font-size:16px}
+    .price{font-weight:700;color:var(--primary)}
+    .muted{color:var(--muted);font-size:13px}
+    .actions{margin-top:auto;display:flex;gap:8px}
+    .btn{padding:8px 10px;border-radius:10px;border:0;cursor:pointer}
+    .btn--primary{background:var(--primary);color:#fff}
+    .btn--outline{background:transparent;border:1px solid #ddd}
+    .cart{position:fixed;right:18px;bottom:18px;background:var(--card);width:320px;border-radius:12px;padding:12px;box-shadow:0 10px 30px rgba(8,12,20,0.12)}
+    .cart h4{margin:0 0 8px}
+    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed #eee}
+    .qty{display:flex;gap:6px;align-items:center}
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:24px}
+    #openCartBtn i {
+  margin-right: 6px;
+  color: #fff; border-color: rgba(255,255,255,0.35);
+}
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .products{grid-template-columns:repeat(2,1fr)}
+      .cart{right:10px;left:10px;width:auto}
+      .search{display:none}
+    }
+    @media (max-width:520px){.products{grid-template-columns:1fr}.logo{width:44px;height:44px}}
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">
+       <img src="../images/logo.png" alt="logo" />
+      </div>
+
+      <div>
+        <h1>Tạp Hóa LÊ LỆ</h1>
+        <div style="font-size:13px;opacity:.9">Giao hàng nhanh - Giá cả thân thiện</div>
+      </div>
+    </div>
+    <div class="search">
+      <input id="searchInput" placeholder="Tìm sản phẩm, ví dụ:  Dầu ăn, Mì tôm..." />
+    </div>
+    <div style="margin-left:12px">
+      <button class="btn btn--outline" id="openCartBtn">
+      <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng (0)
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <aside class="sidebar">
+        <h3>Danh mục</h3>
+        <div class="categories" id="categoryList">
+          <!-- categories inserted by JS -->
+        </div>
+        <hr style="margin:12px 0">
+        <h4>Thông tin cửa hàng</h4>
+        <p class="muted">Địa chỉ: Đội 13, Tịnh Hà - Sơn Tịnh - Quảng Ngãi<br> Hotline: 0355422189</p>
+      </aside>
+
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h2>Sản phẩm</h2>
+          <div class="muted" id="resultCount">0 sản phẩm</div>
+        </div>
+
+        <div class="products" id="productGrid">
+          <!-- sản phẩm sẽ được render bằng JS -->
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      © <span id="year"></span> Tạp Hóa Lê Lệ cảm ơn quý khách.
+    </footer>
+  </main>
+
+  <div class="cart" id="cartBox" style="display:none">
+    <h4>Giỏ hàng</h4>
+    <div id="cartItems"></div>
+    <div style="display:flex;justify-content:space-between;padding-top:10px">
+      <div class="muted">Tổng:</div>
+      <div id="cartTotal" style="font-weight:700">0₫</div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="btn btn--outline" id="closeCart">Đóng</button>
+      <button class="btn btn--primary" id="checkout">Xác nhận & Gọi</button>
+    </div>
+  </div>
+
+  <script>
+    // Dữ liệu mẫu (thay bằng dữ liệu thực tế của mẹ)
+    const PRODUCTS = [
+      {id:1,name:'Bia Dung Quất chai',category:'BIA',price:155000,img:'../images/DQC.png'},
+      {id:1,name:'Bia Dung Quất lon',category:'BIA',price:250000,img:'../images/DQlon.png'},
+      {id:2,name:'Bia Tiger Bạc',category:'BIA',price:420000,img:'../images/Tigerbac.png'},
+      {id:2,name:'Bia Tiger Nâu',category:'BIA',price:390000,img:'../images/Tigernau.png'},
+      {id:3,name:'Bia Huda',category:'BIA',price:390000,img:'../images/Huda.png'},
+      {id:3,name:'Bia Huda ICE TWIST',category:'BIA',price:310000,img:'../images/HudaICE.png'},
+      {id:4,name:'Bia Heineken 330ml',category:'BIA',price:470000,img:'../images/Ken330.png'},
+      {id:4,name:'Bia Heineken 250ml',category:'BIA',price:370000,img:'../images/Ken250.png'},
+      {id:5,name:'Bia Sài Gòn',category:'BIA',price:275000,img:'../images/SG.png'},
+      {id:6,name:'Bia Kingken',category:'BIA',price:250000,img:'../images/KK.png'},
+
+      {id:6,name:'Coca (lốc)',category:'Đồ uống',price:50000,img:'../images/Cocaloc.png'},
+      {id:6,name:'Sting (chai lốc)',category:'Đồ uống',price:50000,img:'../images/Stingloc.png'},
+      {id:6,name:'Revive (lốc)',category:'Đồ uống',price:40000,img:'../images/Revive.png'},
+      {id:6,name:'Trà xanh 0 độ (lốc)',category:'Đồ uống',price:50000,img:'../images/0do.png'},
+      {id:6,name:'Sữa Nutri Boots (hương dâu)',category:'Đồ uống',price:50000,img:'../images/Nutridau.png'},
+      {id:6,name:'Sữa Nutri Boots (hương cam)',category:'Đồ uống',price:50000,img:'../images/Nutricam.png'},
+      {id:6,name:'Nước Yến (lốc)',category:'Đồ uống',price:45000,img:'../images/yen.png'},
+      {id:6,name:'Nước Tăng lực Number 1',category:'Đồ uống',price:50000,img:'../images/N1.png'},
+      {id:6,name:'Nước Yến Sanest 6 lon',category:'Đồ uống',price:57000,img:'../images/Sanest.png'},
+
+      {id:5,name:'Bột Ngọt A-One ',category:'Gia vị',price:30000,img:'../images/Aone.png'},
+      {id:5,name:'Hạt nêm Maggi nấm hương',category:'Gia vị',price:8000,img:'../images/Namhuong.png'},
+      {id:5,name:'Hạt nêm Knorr',category:'Gia vị',price:15000,img:'../images/Knorr.png'},
+      {id:5,name:'Nước tương Maggi',category:'Gia vị',price:17000,img:'../images/maggi.png'},
+      {id:5,name:'Nước tương Tam Thái Tử',category:'Gia vị',price:20000,img:'../images/tam.png'},
+      {id:7,name:'Nước mắm Nam Ngư',category:'Gia vị',price:32000,img:'../images/namngu.png'},
+      {id:8,name:'Nước mắm Đệ Nhị',category:'Gia vị',price:20000,img:'../images/denhi.png'},
+      {id:5,name:'Đường (nửa kg)',category:'Gia vị',price:12000,img:'../images/duong.png'},
+      {id:5,name:'Muối hột',category:'Gia vị',price:5000,img:'../images/muoi.png'},
+      {id:5,name:'Muối Iốt',category:'Gia vị',price:5000,img:'../images/iot.png'},
+      {id:5,name:'Muối bột canh',category:'Gia vị',price:5000,img:'../images/botcanh.png'},
+      {id:5,name:'Dầu Meizan',category:'Gia vị',price:46000,img:'../images/dau.png'},
+
+      {id:6,name:'Mì ăn liền Hảo Hảo(gói)',category:'Đồ ăn sẵn',price:5000,img:'../images/haohao.png'},
+      {id:6,name:'Mì ăn liền 3 Miền(gói)',category:'Đồ ăn sẵn',price:5000,img:'../images/3mien.png'},
+      {id:6,name:'Mì ăn lẩu nấm chua cay REEVA(gói)',category:'Đồ ăn sẵn',price:8000,img:'../images/minam.png'},
+      {id:6,name:'Hủ tiếu sườn heo(gói)',category:'Đồ ăn sẵn',price:9000,img:'../images/hutieu.png'},
+      {id:6,name:'Phở Đệ Nhất(gói)',category:'Đồ ăn sẵn',price:8000,img:'../images/pho.png'},
+      {id:6,name:'Cháo gói thịt bằm(gói)',category:'Đồ ăn sẵn',price:4000,img:'../images/chao.png'},
+      {id:6,name:'Bánh gạo nhật ICHI mini',category:'Đồ ăn sẵn',price:20000,img:'../images/ICHI.png'},
+      {id:5,name:'Bánh gạo One One',category:'Đồ ăn sẵn',price:18000,img:'../images/OneOne.png'},
+      {id:6,name:'Bánh Belgi Vị cốm dừa',category:'Đồ ăn sẵn',price:30000,img:'../images/Belgi.png'},
+      {id:6,name:'Bánh Quy',category:'Đồ ăn sẵn',price:7000,img:'../images/BanhQuy.png'},
+
+      {id:9,name:'Nước rửa chén Sunlight(lớn)',category:'Vệ sinh gia dụng',price:145000,img:'../images/sunlight.png'},
+      {id:9,name:'Nước rửa chén Sunlight(nhỏ)',category:'Vệ sinh gia dụng',price:145000,img:'../images/sunlightnho.png'},
+      {id:9,name:'Nước rửa chén Lix',category:'Vệ sinh gia dụng',price:145000,img:'../images/lix.png'},
+      {id:9,name:'Nước lau sàn sunlight',category:'Vệ sinh gia dụng',price:145000,img:'../images/lausan.png'}
+
+
+
+    ];
+
+    // state
+    let CART = JSON.parse(localStorage.getItem('cart_v1') || '[]');
+    const categories = ['Tất cả', ...Array.from(new Set(PRODUCTS.map(p=>p.category)) )];
+
+    // DOM refs
+    const categoryList = document.getElementById('categoryList');
+    const productGrid = document.getElementById('productGrid');
+    const resultCount = document.getElementById('resultCount');
+    const searchInput = document.getElementById('searchInput');
+    const cartBox = document.getElementById('cartBox');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const openCartBtn = document.getElementById('openCartBtn');
+    const closeCart = document.getElementById('closeCart');
+    const checkout = document.getElementById('checkout');
+
+    function formatVND(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",")+ '₫'}
+
+    // render categories
+    categories.forEach((c,i)=>{
+      const btn = document.createElement('button');
+      btn.textContent = c;
+      if(i===0) btn.classList.add('active');
+      btn.onclick = ()=>{document.querySelectorAll('.categories button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderProducts();}
+      categoryList.appendChild(btn);
+    });
+
+    function getSelectedCategory(){
+      return document.querySelector('.categories button.active').textContent;
+    }
+
+    function renderProducts(){
+      const q = searchInput.value.trim().toLowerCase();
+      const cat = getSelectedCategory();
+      const filtered = PRODUCTS.filter(p=>{
+        if(cat !== 'Tất cả' && p.category !== cat) return false;
+        if(q && !(p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))) return false;
+        return true;
+      });
+      productGrid.innerHTML='';
+      resultCount.textContent = filtered.length + ' sản phẩm';
+      filtered.forEach(p=>{
+        const el = document.createElement('div');el.className='card';
+        el.innerHTML = `
+          <img src="${p.img}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <div class="muted">${p.category}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div class="price">${formatVND(p.price)}</div>
+            <div class="actions">
+              <button class="btn btn--outline" onclick="viewProduct(${p.id})">Xem</button>
+              <button class="btn btn--primary" onclick="addToCart(${p.id})">Thêm</button>
+            </div>
+          </div>
+        `;
+        productGrid.appendChild(el);
+      });
+    }
+
+    function viewProduct(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      alert(p.name + "\nGiá: " + formatVND(p.price) + "\nDanh mục: " + p.category + "\n\nGọi mẹ để xác nhận đặt hàng.");
+    }
+
+    function addToCart(id){
+      const item = CART.find(x=>x.id===id);
+      if(item) item.qty += 1; else CART.push({id,qty:1});
+      saveCart();
+      updateCartUI();
+      openCart();
+    }
+
+    function saveCart(){localStorage.setItem('cart_v1', JSON.stringify(CART));}
+
+    function updateCartUI(){
+      const count = CART.reduce((s,i)=>s+i.qty,0);
+      openCartBtn.textContent = `Giỏ hàng (${count})`;
+      cartItems.innerHTML='';
+      let total = 0;
+      CART.forEach(ci=>{
+        const p = PRODUCTS.find(x=>x.id===ci.id);
+        total += p.price * ci.qty;
+        const div = document.createElement('div');div.className='cart-item';
+        div.innerHTML = `
+          <div style="flex:1">
+            <div style="font-weight:700">${p.name}</div>
+            <div class="muted">${formatVND(p.price)} x ${ci.qty}</div>
+          </div>
+          <div class="qty">
+            <button class="btn btn--outline" onclick="changeQty(${ci.id}, -1)">-</button>
+            <div style="min-width:22px;text-align:center">${ci.qty}</div>
+            <button class="btn btn--outline" onclick="changeQty(${ci.id}, 1)">+</button>
+          </div>
+        `;
+        cartItems.appendChild(div);
+      });
+      cartTotal.textContent = formatVND(total);
+    }
+
+    function changeQty(id, delta){
+      const it = CART.find(x=>x.id===id);
+      if(!it) return;
+      it.qty += delta;
+      if(it.qty<=0) CART = CART.filter(x=>x.id!==id);
+      saveCart();updateCartUI();
+    }
+
+    function openCart(){cartBox.style.display='block'}
+    function closeCartBox(){cartBox.style.display='none'}
+
+    openCartBtn.onclick = openCart;
+    closeCart.onclick = closeCartBox;
+
+    checkout.onclick = ()=>{
+      if(CART.length===0){alert('Giỏ hàng trống');return}
+      // tạo đơn hàng đơn giản: hiển thị tóm tắt và gợi ý gọi điện
+      let summary = 'Đơn hàng:\n';
+      let phone = prompt('Nhập số điện thoại người nhận (ví dụ: 0123456789):');
+      if(!phone) return;
+      CART.forEach(ci=>{const p = PRODUCTS.find(x=>x.id===ci.id);summary += `${p.name} x ${ci.qty} = ${formatVND(p.price*ci.qty)}\n`;});
+      summary += '\n' + 'Tổng: ' + cartTotal.textContent + '\n\n';
+      summary += 'Gọi số cửa hàng để hoàn tất đặt hàng.';
+      alert(summary);
+      // sau khi checkout, xóa giỏ
+      CART = []; saveCart(); updateCartUI(); closeCartBox();
+    }
+
+    // tìm kiếm realtime
+    searchInput.addEventListener('input', ()=>renderProducts());
+
+    // init
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderProducts(); updateCartUI();
+
+    // helpers to allow onclick inline to find functions
+    window.addToCart = addToCart; window.viewProduct = viewProduct; window.changeQty = changeQty; window.openCart = openCart; window.closeCart = closeCartBox;
+  </script>
+</body>
+</html>
